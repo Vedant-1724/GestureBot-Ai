@@ -14,8 +14,8 @@
    python validate_model.py
 
  Or with custom paths:
-   python validate_model.py --model ../05_model/gc_car_yolo11m_best.pt
-                            --data  ../03_dataset/prepared_dataset
+   python validate_model.py --model ../../models/gc_car_yolo11m_best.pt
+                            --data  ../../data/processed
                             --split test
 
  Requirements:
@@ -43,8 +43,8 @@ from PIL import Image
 import torchvision.transforms as T
 
 # ── Default paths (relative to this script's folder) ─────────
-DEFAULT_MODEL = "../05_model/gc_car_trained_model/gc_car_yolo11m_best.pt"
-DEFAULT_DATA  = "../03_dataset/prepared_dataset"
+DEFAULT_MODEL = "../models/gc_car_trained_model/gc_car_yolo11m_best.pt"
+DEFAULT_DATA  = "../../data/processed"
 DEFAULT_SPLIT = "test"
 DEFAULT_IMGSZ = 224
 DEFAULT_BATCH = 32
@@ -200,7 +200,7 @@ def main():
 
     if not mp.exists():
         print(f"\n[ERROR] Model not found: {mp}")
-        print("Download gc_car_yolo11m_best.pt from Colab and place it in 05_model/")
+        print("Download gc_car_yolo11m_best.pt from Colab and place it in models/")
         sys.exit(1)
 
     split_dir = dp / args.split

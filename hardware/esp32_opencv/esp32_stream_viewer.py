@@ -12,7 +12,7 @@
 
  Controls (while window is open):
    Q  — quit
-   S  — save current frame to captures/ folder
+   S  — save current frame to ../../data/captures/ folder
 ================================================================
 """
 
@@ -30,7 +30,7 @@ STREAM_PORT        = 80
 STREAM_PATH        = "/stream"
 DISPLAY_SCALE      = 1.0               # 1.0 = native, 1.5 = larger
 RECONNECT_DELAY    = 3.0               # Seconds before reconnect attempt
-SAVE_DIR           = "../06_inference/captures"
+SAVE_DIR           = "../06_inference/../../data/captures"
 
 # ── Argument parser ───────────────────────────────────────────
 def parse_args():

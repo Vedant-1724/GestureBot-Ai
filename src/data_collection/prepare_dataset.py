@@ -20,7 +20,7 @@
  Run this LOCALLY before uploading dataset to Google Colab.
 
  Steps:
-   1. Extract Kaggle ZIP into  03_dataset/Dataset/
+   1. Extract Kaggle ZIP into  data/raw/
    2. cd GC_Car_Project/03_dataset
    3. python prepare_dataset.py
 
@@ -172,7 +172,7 @@ def print_final_stats():
     print("=" * 60)
     print(f"\nDataset saved to: {OUTPUT_DIR.absolute()}")
     print("Next step → upload the 'prepared_dataset' folder to Google Drive,")
-    print("then run 04_training/train_colab.py in Google Colab.")
+    print("then run src/training/train_colab.py in Google Colab.")
 
 
 # ─────────────────────────────────────────────────────────────

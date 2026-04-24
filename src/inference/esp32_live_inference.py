@@ -36,14 +36,14 @@ from collections import deque, Counter
 
 # ── Configuration ─────────────────────────────────────────────
 DEFAULT_ESP32_IP  = "192.168.1.100"          # Change to your ESP32-CAM IP
-DEFAULT_MODEL     = "../05_model/gc_car_trained_model/gc_car_yolo11m_best.pt"
+DEFAULT_MODEL     = "../models/gc_car_trained_model/gc_car_yolo11m_best.pt"
 STREAM_PATH       = "/stream"
 CONF_THRESHOLD    = 0.65    # Min confidence to show label
 SMOOTH_WINDOW     = 5       # Majority-vote over last N frames
 IMG_SIZE          = 224     # Must match training imgsz
 INFERENCE_SKIP    = 1       # Run AI every N frames (1 = every frame)
 RECONNECT_DELAY   = 3.0
-SAVE_DIR          = "captures"
+SAVE_DIR          = "../../data/captures"
 
 # ── Display colours (BGR) ─────────────────────────────────────
 COLORS = {
@@ -78,11 +78,11 @@ class GarbageClassifier:
         candidates = [
             Path(model_path),
             script_dir / model_path,
-            script_dir / "../05_model/gc_car_trained_model/gc_car_yolo11m_best.pt",
-            script_dir / "../05_model/gc_car_trained_model/gc_car_yolo11s_fast_best.pt",
-            script_dir / "../05_model/gc_car_trained_model/gc_car_yolo11m_balanced_best.pt",
-            script_dir / "../05_model/gc_car_trained_model/gc_car_yolo11m_max_best.pt",
-            script_dir / "../05_model/gc_car_yolo11m_best.pt",
+            script_dir / "../models/gc_car_trained_model/gc_car_yolo11m_best.pt",
+            script_dir / "../../models/gc_car_trained_model/gc_car_yolo11s_fast_best.pt",
+            script_dir / "../../models/gc_car_trained_model/gc_car_yolo11m_balanced_best.pt",
+            script_dir / "../../models/gc_car_trained_model/gc_car_yolo11m_max_best.pt",
+            script_dir / "../../models/gc_car_yolo11m_best.pt",
         ]
 
         mp = None
@@ -94,7 +94,7 @@ class GarbageClassifier:
 
         if mp is None:
             print(f"[ERROR] Model not found: {model_path}")
-            print("[INFO] Checked common model locations inside 05_model/.")
+            print("[INFO] Checked common model locations inside models/.")
             sys.exit(1)
 
         print(f"[INFO] Loading model: {mp}")

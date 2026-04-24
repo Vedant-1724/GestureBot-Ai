@@ -28,8 +28,9 @@ credentials.*
 secrets.*
 
 # Runtime output
-captures/
-06_inference/captures/
+data/raw/
+data/processed/
+data/captures/
 *.log
 
 # Notebook and editor metadata

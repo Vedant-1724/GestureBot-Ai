@@ -43,7 +43,7 @@ flowchart TD
 
     %% 3. Validation & Inference Phase
     subgraph Inference ["3. Validation & Inference (Local / Hardware)"]
-        R(Download Weights to '05_model/')
+        R(Download Weights to 'models/')
         S{Mode Selection}
         
         R --> S
@@ -70,14 +70,14 @@ The project folder contains the original hardware sketches, Python utilities, pr
 
 | Area | Purpose | Notes |
 |---|---|---|
-| `01_hardware/` | Arduino Nano and ESP32-CAM firmware plus hardware reference docs | Project-owned source and hardware documentation |
-| `02_esp32_opencv/` | ESP32-CAM stream test utility | Tests MJPEG video before AI inference |
-| `03_dataset/` | Raw dataset, prepared dataset, and preparation script | Contains 24,518 image files plus the preparation script |
-| `04_training/` | Google Colab training script | Trains YOLO classification models |
-| `05_model/` | Trained weights and result images | Contains best/last model checkpoints and plots |
-| `06_inference/` | Laptop-side validation and live inference scripts | Runs local validation and real-time classification |
-| `07_docs/` | Main README and master guide | Documentation for project execution and report writing |
-| `captures/` | Runtime screenshot output location | Currently empty |
+| `hardware/` | Arduino Nano and ESP32-CAM firmware plus hardware reference docs | Project-owned source and hardware documentation |
+| `hardware/esp32_opencv/` | ESP32-CAM stream test utility | Tests MJPEG video before AI inference |
+| `src/data_collection/` | Raw dataset, prepared dataset, and preparation script | Contains 24,518 image files plus the preparation script |
+| `src/training/` | Google Colab training script | Trains YOLO classification models |
+| `models/` | Trained weights and result images | Contains best/last model checkpoints and plots |
+| `src/inference/` | Laptop-side validation and live inference scripts | Runs local validation and real-time classification |
+| `docs/` | Main README and master guide | Documentation for project execution and report writing |
+| `data/captures/` | Runtime screenshot output location | Currently empty |
 | `gc_car_env/` | Local Python virtual environment | Generated dependency folder, about 5 GB, Python 3.11.9 |
 | `requirements.txt` | Python dependency list | PyTorch is intentionally installed separately |
 | `run_model.bat` | Windows launcher for live inference | Activates `gc_car_env` and starts ESP32 or webcam inference |
@@ -124,25 +124,25 @@ The model answers only this two-class safety question. It does not classify dry/
 
 | File or folder | What it contains |
 |---|---|
-| `01_hardware/transmitter/transmitter.ino` | Arduino Nano transmitter sketch. Reads MPU6050 tilt, applies startup calibration, applies a 12 degree dead zone, maps tilt into modes and throttle, and sends radio packets at about 50 Hz. |
-| `01_hardware/receiver/receiver.ino` | Arduino Nano receiver sketch. Reads nRF24L01+ control packets, applies a 500 ms failsafe timeout, and controls left/right motor pairs through the L298N. |
-| `01_hardware/esp32_cam/esp32_stream.ino` | AI Thinker ESP32-CAM sketch. Connects to Wi-Fi, configures the OV2640 camera, and serves an MJPEG stream on `/stream`. |
-| `01_hardware/docs/pin_connections.md` | Detailed wiring reference for transmitter, receiver, L298N, motors, ESP32-CAM flashing, ESP32-CAM power, and shared grounding. |
-| `01_hardware/docs/hardware_specifications.md` | Report-ready specifications and practical notes for Arduino Nano, nRF24L01+, adapter boards, MPU6050, L298N, DC gear motors, ESP32-CAM, and power distribution. |
-| `02_esp32_opencv/esp32_stream_viewer.py` | OpenCV viewer for testing the ESP32-CAM stream before running the classifier. Shows FPS/frame count and can save frames. |
-| `03_dataset/prepare_dataset.py` | Dataset preparation utility. Reads `03_dataset/Dataset/`, remaps the 10 source classes to two project labels, validates images, pads/resizes to 640 x 640, and creates train/val/test folders. |
-| `03_dataset/Dataset/` | Raw garbage image dataset arranged by source class folders. |
-| `03_dataset/prepared_dataset/` | Prepared YOLO classification dataset arranged as `train`, `val`, and `test`, each containing `hazardous` and `non_hazardous` folders. |
-| `04_training/train_colab.py` | Google Colab training workflow. Installs packages, mounts Google Drive, copies the prepared dataset to Colab local storage, trains YOLO classification presets, validates on the test split, and saves weights/plots back to Drive. |
-| `05_model/gc_car_trained_model/gc_car_yolo11m_best.pt` | Best trained model checkpoint currently present in the workspace. |
-| `05_model/gc_car_trained_model/gc_car_yolo11m_last.pt` | Last training checkpoint currently present in the workspace. |
-| `05_model/gc_car_trained_model/results.png` | Training results plot exported from Ultralytics/Colab. |
-| `05_model/gc_car_trained_model/confusion_matrix.png` | Confusion matrix artifact from training/validation. |
-| `05_model/gc_car_trained_model/confusion_matrix_detailed.png` | Detailed confusion matrix plot generated by the Colab workflow. |
-| `06_inference/esp32_live_inference.py` | Main laptop inference app. Reads ESP32 MJPEG or local webcam frames, loads the YOLO model, predicts every frame, smooths labels over a 5-frame window, and draws the live HUD. |
-| `06_inference/validate_model.py` | Local model validation utility. Loads the model and prepared split, calculates classification metrics, confusion matrix, ROC/PR curves, and sample predictions. |
-| `07_docs/project_master_guide.md` | Longer project explanation and methodology notes for report/demo preparation. |
-| `07_docs/README.md` | Legacy documentation placeholder (Content merged into this main README). |
+| `hardware/transmitter/transmitter.ino` | Arduino Nano transmitter sketch. Reads MPU6050 tilt, applies startup calibration, applies a 12 degree dead zone, maps tilt into modes and throttle, and sends radio packets at about 50 Hz. |
+| `hardware/receiver/receiver.ino` | Arduino Nano receiver sketch. Reads nRF24L01+ control packets, applies a 500 ms failsafe timeout, and controls left/right motor pairs through the L298N. |
+| `hardware/esp32_cam/esp32_stream.ino` | AI Thinker ESP32-CAM sketch. Connects to Wi-Fi, configures the OV2640 camera, and serves an MJPEG stream on `/stream`. |
+| `hardware/docs/pin_connections.md` | Detailed wiring reference for transmitter, receiver, L298N, motors, ESP32-CAM flashing, ESP32-CAM power, and shared grounding. |
+| `hardware/docs/hardware_specifications.md` | Report-ready specifications and practical notes for Arduino Nano, nRF24L01+, adapter boards, MPU6050, L298N, DC gear motors, ESP32-CAM, and power distribution. |
+| `hardware/esp32_opencv/esp32_stream_viewer.py` | OpenCV viewer for testing the ESP32-CAM stream before running the classifier. Shows FPS/frame count and can save frames. |
+| `src/data_collection/prepare_dataset.py` | Dataset preparation utility. Reads `data/raw/`, remaps the 10 source classes to two project labels, validates images, pads/resizes to 640 x 640, and creates train/val/test folders. |
+| `data/raw/` | Raw garbage image dataset arranged by source class folders. |
+| `data/processed/` | Prepared YOLO classification dataset arranged as `train`, `val`, and `test`, each containing `hazardous` and `non_hazardous` folders. |
+| `src/training/train_colab.py` | Google Colab training workflow. Installs packages, mounts Google Drive, copies the prepared dataset to Colab local storage, trains YOLO classification presets, validates on the test split, and saves weights/plots back to Drive. |
+| `models/gc_car_trained_model/gc_car_yolo11m_best.pt` | Best trained model checkpoint currently present in the workspace. |
+| `models/gc_car_trained_model/gc_car_yolo11m_last.pt` | Last training checkpoint currently present in the workspace. |
+| `models/gc_car_trained_model/results.png` | Training results plot exported from Ultralytics/Colab. |
+| `models/gc_car_trained_model/confusion_matrix.png` | Confusion matrix artifact from training/validation. |
+| `models/gc_car_trained_model/confusion_matrix_detailed.png` | Detailed confusion matrix plot generated by the Colab workflow. |
+| `src/inference/esp32_live_inference.py` | Main laptop inference app. Reads ESP32 MJPEG or local webcam frames, loads the YOLO model, predicts every frame, smooths labels over a 5-frame window, and draws the live HUD. |
+| `src/inference/validate_model.py` | Local model validation utility. Loads the model and prepared split, calculates classification metrics, confusion matrix, ROC/PR curves, and sample predictions. |
+| `docs/project_master_guide.md` | Longer project explanation and methodology notes for report/demo preparation. |
+| `docs/README.md` | Legacy documentation placeholder (Content merged into this main README). |
 | `requirements.txt` | Python packages for computer vision, data handling, plotting, dataset preparation, model training helpers, and inference. |
 | `run_model.bat` | Windows launcher that activates `gc_car_env`, checks for the trained model, asks for ESP32-CAM IP or `local`, and starts live inference. |
 
@@ -201,7 +201,7 @@ Important ESP32-CAM behavior:
 - The stream URL is `http://<ESP32_IP>/stream`.
 - With PSRAM, the sketch uses VGA 640 x 480. Without PSRAM, it falls back to QVGA 320 x 240.
 
-Full pin-by-pin wiring is maintained in `01_hardware/docs/pin_connections.md`.
+Full pin-by-pin wiring is maintained in `hardware/docs/pin_connections.md`.
 
 ## Dataset Details
 
@@ -239,8 +239,8 @@ The prepared dataset currently mirrors the same 12,259 images after validation, 
 
 Dataset preparation details:
 
-- Source folder: `03_dataset/Dataset/`
-- Output folder: `03_dataset/prepared_dataset/`
+- Source folder: `data/raw/`
+- Output folder: `data/processed/`
 - Split ratio: 80% train, 10% validation, 10% test
 - Output image size: 640 x 640
 - Resize method: preserve aspect ratio, pad to a square black canvas, save as JPEG
@@ -257,7 +257,7 @@ This project uses Ultralytics YOLO classification, not object detection. That me
 | Task type | Image classification |
 | Labels | `hazardous`, `non_hazardous` |
 | Recommended model for final demo | YOLO11m classification |
-| Checked-in model artifact | `05_model/gc_car_trained_model/gc_car_yolo11m_best.pt` |
+| Checked-in model artifact | `models/gc_car_trained_model/gc_car_yolo11m_best.pt` |
 | Inference image size | 224 |
 | Confidence threshold in live app | 0.65 |
 | Prediction smoothing | Majority vote over the last 5 predictions |
@@ -270,7 +270,7 @@ The training script has three presets:
 | `balanced` | `yolo11m-cls.pt` | 50 | 224 | 64 | Better final balance |
 | `max_accuracy` | `yolo11m-cls.pt` | 100 | 224 | 64 | Slower accuracy-focused run |
 
-The current script default is `fast`. Change the preset inside `04_training/train_colab.py` before running Colab if you want the `balanced` or `max_accuracy` YOLO11m workflow.
+The current script default is `fast`. Change the preset inside `src/training/train_colab.py` before running Colab if you want the `balanced` or `max_accuracy` YOLO11m workflow.
 
 ## Software Requirements
 
@@ -331,7 +331,7 @@ The existing `run_model.bat` expects the environment at `gc_car_env\Scripts\acti
 
 ### 2. Upload Transmitter Firmware
 
-1. Open `01_hardware/transmitter/transmitter.ino` in Arduino IDE.
+1. Open `hardware/transmitter/transmitter.ino` in Arduino IDE.
 2. Install the RF24 and MPU6050 libraries.
 3. Select Arduino Nano and the correct processor/bootloader for your board.
 4. Upload while the transmitter hardware is connected.
@@ -341,7 +341,7 @@ The existing `run_model.bat` expects the environment at `gc_car_env\Scripts\acti
 
 ### 3. Upload Receiver Firmware
 
-1. Open `01_hardware/receiver/receiver.ino`.
+1. Open `hardware/receiver/receiver.ino`.
 2. Select Arduino Nano.
 3. Upload to the receiver Nano.
 4. Open Serial Monitor at 9600 baud.
@@ -350,7 +350,7 @@ The existing `run_model.bat` expects the environment at `gc_car_env\Scripts\acti
 
 ### 4. Upload ESP32-CAM Firmware
 
-1. Open `01_hardware/esp32_cam/esp32_stream.ino`.
+1. Open `hardware/esp32_cam/esp32_stream.ino`.
 2. Replace the placeholder Wi-Fi SSID and password.
 3. Connect GPIO0 to GND for flashing mode.
 4. Upload the sketch.
@@ -361,7 +361,7 @@ The existing `run_model.bat` expects the environment at `gc_car_env\Scripts\acti
 
 ### 5. Test ESP32-CAM Stream
 
-From inside `02_esp32_opencv/`, run the stream viewer with `python esp32_stream_viewer.py --ip <ESP32_IP>`.
+From inside `hardware/esp32_opencv/`, run the stream viewer with `python esp32_stream_viewer.py --ip <ESP32_IP>`.
 
 Controls:
 
@@ -374,26 +374,26 @@ The viewer reads `http://<ESP32_IP>:80/stream`, reconnects after dropped frames,
 
 ### 6. Prepare Dataset
 
-From inside `03_dataset/`, run `python prepare_dataset.py`.
+From inside `src/data_collection/`, run `python prepare_dataset.py`.
 
-Before running it, make sure the raw dataset exists at `03_dataset/Dataset/` with the expected source class folders. Running the preparation step recreates `03_dataset/prepared_dataset/`.
+Before running it, make sure the raw dataset exists at `data/raw/` with the expected source class folders. Running the preparation step recreates `data/processed/`.
 
 ### 7. Train In Google Colab
 
-1. Upload `03_dataset/prepared_dataset/` to Google Drive.
+1. Upload `data/processed/` to Google Drive.
 2. Open Google Colab and enable a GPU runtime.
-3. Copy or upload `04_training/train_colab.py`.
+3. Copy or upload `src/training/train_colab.py`.
 4. Set `DRIVE_DATASET_PATH` to the prepared dataset location in Drive.
 5. Choose the training preset.
 6. Run the cells from top to bottom.
 7. Download the best checkpoint from Drive.
-8. Place the chosen best model in `05_model/gc_car_trained_model/`.
+8. Place the chosen best model in `models/gc_car_trained_model/`.
 
-For this workspace, the live inference default already points to `05_model/gc_car_trained_model/gc_car_yolo11m_best.pt`.
+For this workspace, the live inference default already points to `models/gc_car_trained_model/gc_car_yolo11m_best.pt`.
 
 ### 8. Validate Locally
 
-From inside `06_inference/`, run `python validate_model.py`.
+From inside `src/inference/`, run `python validate_model.py`.
 
 Useful options:
 
@@ -405,15 +405,15 @@ Useful options:
 | `--imgsz` | Validation image size |
 | `--batch` | Batch size |
 
-Validation outputs include accuracy, precision, recall, F1, confusion matrix, ROC-AUC, average precision, and sample predictions. The script saves validation plot images in `06_inference/`.
+Validation outputs include accuracy, precision, recall, F1, confusion matrix, ROC-AUC, average precision, and sample predictions. The script saves validation plot images in `src/inference/`.
 
 ### 9. Run Live Inference
 
 Recommended Windows path: run `run_model.bat` from the project root. It checks for the virtual environment and trained model, asks for the ESP32-CAM IP, and starts inference.
 
-Manual ESP32-CAM mode from inside `06_inference/`: `python esp32_live_inference.py --ip <ESP32_IP>`.
+Manual ESP32-CAM mode from inside `src/inference/`: `python esp32_live_inference.py --ip <ESP32_IP>`.
 
-Manual webcam mode from inside `06_inference/`: `python esp32_live_inference.py --local`.
+Manual webcam mode from inside `src/inference/`: `python esp32_live_inference.py --local`.
 
 Useful options:
 
@@ -435,7 +435,7 @@ Live inference controls:
 
 The live inference app:
 
-- Loads the first available model from the supplied path or common model locations in `05_model/`.
+- Loads the first available model from the supplied path or common model locations in `models/`.
 - Uses CUDA automatically when PyTorch detects a GPU.
 - Falls back to CPU if CUDA is unavailable, but live performance will be slower.
 - Reads MJPEG frames from `/stream`.
@@ -483,13 +483,13 @@ Some scripts use relative paths. For least confusion, run each script from its o
 
 | Task | Recommended working folder |
 |---|---|
-| Stream viewer | `02_esp32_opencv/` |
-| Dataset preparation | `03_dataset/` |
-| Local validation | `06_inference/` |
-| Manual live inference | `06_inference/` |
+| Stream viewer | `hardware/esp32_opencv/` |
+| Dataset preparation | `src/data_collection/` |
+| Local validation | `src/inference/` |
+| Manual live inference | `src/inference/` |
 | Batch launcher | Project root |
 
-The batch launcher runs from the project root and live screenshots are saved relative to that root, so the top-level `captures/` folder is the natural screenshot folder for that launcher.
+The batch launcher runs from the project root and live screenshots are saved relative to that root, so the top-level `data/captures/` folder is the natural screenshot folder for that launcher.
 
 ## Limitations
 
@@ -524,7 +524,7 @@ The batch launcher runs from the project root and live screenshots are saved rel
 | Radio packets fail | nRF power instability or mismatched settings | Use adapter board, common ground, channel 108, 250 kbps, same pipe address |
 | Car moves wrong direction | Motor polarity reversed | Swap the wires for the reversed motor pair |
 | Car keeps moving after signal loss | Receiver not powered/reset correctly | Confirm receiver sketch is running and serial output updates |
-| Model file not found | Checkpoint placed in the wrong folder | Put `gc_car_yolo11m_best.pt` in `05_model/gc_car_trained_model/` or pass `--model` |
+| Model file not found | Checkpoint placed in the wrong folder | Put `gc_car_yolo11m_best.pt` in `models/gc_car_trained_model/` or pass `--model` |
 | CUDA not used | PyTorch CPU build installed | Install the CUDA wheel matching the laptop GPU setup |
 | Low confidence predictions | Poor lighting, blur, object too small, dataset mismatch | Improve camera view, lighting, and collect matching training images |
 
@@ -546,6 +546,6 @@ The batch launcher runs from the project root and live screenshots are saved rel
 
 | Document | Use |
 |---|---|
-| `07_docs/project_master_guide.md` | Report-style explanation of the full system and methodology |
-| `01_hardware/docs/pin_connections.md` | Exact wiring reference |
-| `01_hardware/docs/hardware_specifications.md` | Hardware specifications and practical notes |
+| `docs/project_master_guide.md` | Report-style explanation of the full system and methodology |
+| `hardware/docs/pin_connections.md` | Exact wiring reference |
+| `hardware/docs/hardware_specifications.md` | Hardware specifications and practical notes |

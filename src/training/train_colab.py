@@ -13,7 +13,7 @@
 
  After training:
    • Download  gc_car_yolo11m_best.pt  from Google Drive
-   • Place it in  GC_Car_Project/05_model/
+   • Place it in  GC_Car_Project/models/
 
   Notes:
     • This trains a project-specific classifier on your own prepared data.
@@ -340,6 +340,6 @@ print("TRAINING COMPLETE!")
 print(f"{'='*60}")
 print("Next steps:")
 print(f"  1. Download  {RUN_NAME}_best.pt  from Drive")
-print(f"  2. Place it in  GC_Car_Project/05_model/")
-print(f"  3. Run  06_inference/esp32_live_inference.py  on laptop")
+print(f"  2. Place it in  GC_Car_Project/models/")
+print(f"  3. Run  src/inference/esp32_live_inference.py  on laptop")
 print(f"{'='*60}")
