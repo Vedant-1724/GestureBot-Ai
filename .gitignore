@@ -1,0 +1,43 @@
+# Local Python environments
+gc_car_env/
+.venv/
+venv/
+env/
+
+# Python caches and build output
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+
+# Local secrets and machine-specific config
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_dsa
+credentials.*
+secrets.*
+
+# Runtime output
+captures/
+06_inference/captures/
+*.log
+
+# Notebook and editor metadata
+.ipynb_checkpoints/
+.vscode/
+.idea/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
