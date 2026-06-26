@@ -1,30 +1,8 @@
-"""
-================================================================
- GC-CAR — YOLO11m TRAINING  (Google Colab)
- File   : train_colab.py
- Folder : 04_training/
+"""Google Colab training script for YOLO11 garbage classification.
+Set DRIVE_DATASET_PATH and TRAINING_PRESET, then run all cells."""
 
- HOW TO USE:
-   1. Open Google Colab  →  colab.research.google.com
-   2. Runtime → Change runtime type → GPU  (T4 or A100)
-   3. Upload this file to Colab (or copy-paste into a cell)
-   4. Update DRIVE_DATASET_PATH below to match your Drive path
-   5. Run all cells top to bottom
 
- After training:
-   • Download  gc_car_yolo11m_best.pt  from Google Drive
-   • Place it in  GC_Car_Project/models/
-
-  Notes:
-    • This trains a project-specific classifier on your own prepared data.
-    • The pretrained YOLO11m-cls weights are only the ImageNet starting
-      point before fine-tuning, not a ready-made garbage model.
-================================================================
-"""
-
-# ══════════════════════════════════════════════════════════════
-# CELL 1  —  Install packages
-# ══════════════════════════════════════════════════════════════
+# --- Cell 1: Install packages ---
 import subprocess, sys
 
 def run(cmd):
@@ -35,15 +13,11 @@ run("pip install ultralytics -q")
 run("pip install scikit-learn matplotlib seaborn -q")
 print("Done.\n")
 
-# ══════════════════════════════════════════════════════════════
-# CELL 2  —  Mount Google Drive
-# ══════════════════════════════════════════════════════════════
+# --- Cell 2: Mount Google Drive ---
 from google.colab import drive
 drive.mount("/content/drive")
 
-# ══════════════════════════════════════════════════════════════
-# CELL 3  —  Imports & GPU check
-# ══════════════════════════════════════════════════════════════
+# --- Cell 3: Imports & GPU check ---
 import os, shutil, time
 import numpy as np
 import matplotlib.pyplot as plt
@@ -76,9 +50,7 @@ else:
 DEVICE = 0 if torch.cuda.is_available() else "cpu"
 print("=" * 60)
 
-# ══════════════════════════════════════════════════════════════
-# CELL 4  —  Configuration  ← EDIT PATHS HERE
-# ══════════════════════════════════════════════════════════════
+# --- Cell 4: Configuration (edit paths here) ---
 
 # Path to your uploaded 'prepared_dataset' folder on Google Drive
 DRIVE_DATASET_PATH = "/content/drive/MyDrive/prepared_dataset"   # <── CHANGE if needed
@@ -154,9 +126,7 @@ if TRAINING_PRESET not in PRESETS:
 CFG = {**COMMON_CFG, **PRESETS[TRAINING_PRESET]}
 RUN_NAME = CFG["run_name"]
 
-# ══════════════════════════════════════════════════════════════
-# CELL 5  —  Copy dataset from Drive to /content (faster I/O)
-# ══════════════════════════════════════════════════════════════
+# --- Cell 5: Copy dataset from Drive to /content (faster I/O) ---
 print("\n[STEP 1] Copying dataset from Google Drive to Colab /content ...")
 print("(Training directly from Drive is 3–5× slower)")
 
@@ -176,9 +146,7 @@ for split in ["train", "val", "test"]:
             bar = "█" * (n // 200)
             print(f"  {split:5s}/{cls:15s}: {n:6d}  {bar}")
 
-# ══════════════════════════════════════════════════════════════
-# CELL 6  —  Load model & train
-# ══════════════════════════════════════════════════════════════
+# --- Cell 6: Load model & train ---
 print(f"\n[STEP 2] Loading YOLO11m-cls (pretrained on ImageNet)...")
 model = YOLO(CFG["model"])
 total_params = sum(p.numel() for p in model.model.parameters())
@@ -222,9 +190,7 @@ results = model.train(
 elapsed = time.time() - t0
 print(f"\nTraining complete in {elapsed/60:.1f} minutes")
 
-# ══════════════════════════════════════════════════════════════
-# CELL 7  —  Validate on test split
-# ══════════════════════════════════════════════════════════════
+# --- Cell 7: Validate on test split ---
 WEIGHTS_DIR = f"{PROJECT_DIR}/{RUN_NAME}/weights"
 best_pt     = f"{WEIGHTS_DIR}/best.pt"
 
@@ -242,9 +208,7 @@ val_result  = best_model.val(
 print(f"\nTop-1 Accuracy : {val_result.top1 * 100:.2f}%")
 print(f"Top-5 Accuracy : {val_result.top5 * 100:.2f}%")
 
-# ══════════════════════════════════════════════════════════════
-# CELL 8  —  Detailed sklearn metrics
-# ══════════════════════════════════════════════════════════════
+# --- Cell 8: Detailed sklearn metrics ---
 print("\n[STEP 5] Computing detailed classification metrics...")
 
 test_dir    = Path(COLAB_DATASET_PATH) / "test"
@@ -319,9 +283,7 @@ plt.tight_layout()
 plt.savefig(f"{PROJECT_DIR}/{RUN_NAME}/confusion_matrix_detailed.png", dpi=150)
 plt.show()
 
-# ══════════════════════════════════════════════════════════════
-# CELL 9  —  Save model + plots to Google Drive
-# ══════════════════════════════════════════════════════════════
+# --- Cell 9: Save model + plots to Google Drive ---
 print(f"\n[STEP 6] Saving to Google Drive: {DRIVE_OUTPUT_DIR}")
 os.makedirs(DRIVE_OUTPUT_DIR, exist_ok=True)
 

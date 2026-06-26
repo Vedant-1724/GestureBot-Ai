@@ -1,28 +1,6 @@
-"""
-================================================================
- GC-CAR — MODEL VALIDATION & METRICS
- File   : validate_model.py
- Folder : 06_inference/
+"""Validate trained YOLO model on a dataset split — reports accuracy, precision,
+recall, F1, confusion matrix, ROC-AUC, and precision-recall curves."""
 
- Run after downloading best.pt from Colab to check:
-   • Accuracy, Precision, Recall, F1
-   • Confusion matrix plot
-   • ROC-AUC curve
-   • Sample prediction printout
-
- Usage:
-   python validate_model.py
-
- Or with custom paths:
-   python validate_model.py --model ../../models/gc_car_yolo11m_best.pt
-                            --data  ../../data/processed
-                            --split test
-
- Requirements:
-   pip install ultralytics torch opencv-python scikit-learn
-               matplotlib seaborn Pillow
-================================================================
-"""
 
 import argparse
 import sys
@@ -42,14 +20,14 @@ from sklearn.metrics import (
 from PIL import Image
 import torchvision.transforms as T
 
-# ── Default paths (relative to this script's folder) ─────────
+
 DEFAULT_MODEL = "../models/gc_car_trained_model/gc_car_yolo11m_best.pt"
 DEFAULT_DATA  = "../../data/processed"
 DEFAULT_SPLIT = "test"
 DEFAULT_IMGSZ = 224
 DEFAULT_BATCH = 32
 
-# ─────────────────────────────────────────────────────────────
+
 def parse_args():
     p = argparse.ArgumentParser(description="GC-Car Model Validation")
     p.add_argument("--model", default=DEFAULT_MODEL)
@@ -180,7 +158,7 @@ def print_sample_preds(paths, labels, preds, probs, class_names, n=10):
               f"{true_l:15s} {pred_l:15s} {conf:.3f}")
 
 
-# ─────────────────────────────────────────────────────────────
+
 def main():
     args    = parse_args()
     base    = Path(__file__).parent

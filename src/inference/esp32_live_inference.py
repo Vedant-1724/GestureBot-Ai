@@ -1,26 +1,6 @@
-"""
-================================================================
- GC-CAR — LIVE REAL-TIME INFERENCE
- File   : esp32_live_inference.py
- Folder : 06_inference/
+"""Live garbage classification from ESP32-CAM MJPEG stream or local webcam
+using YOLO11m-cls. Press Q to quit, S to save a screenshot."""
 
- Connects to ESP32-CAM MJPEG stream, runs YOLO11m-cls on every
- frame, and displays classification result live on screen.
-
- Usage:
-   python esp32_live_inference.py --ip 192.168.1.xxx
-
- Test with laptop webcam (no ESP32 needed):
-   python esp32_live_inference.py --local
-
- Requirements:
-   pip install ultralytics opencv-python numpy requests torch
-
- Controls (while window is open):
-   Q  — quit
-   S  — save current frame screenshot
-================================================================
-"""
 
 import cv2
 import numpy as np
@@ -34,9 +14,10 @@ from pathlib import Path
 from ultralytics import YOLO
 from collections import deque, Counter
 
-# ── Configuration ─────────────────────────────────────────────
-DEFAULT_ESP32_IP  = "192.168.1.100"          # Change to your ESP32-CAM IP
-DEFAULT_MODEL     = "../models/gc_car_trained_model/gc_car_yolo11m_best.pt"
+
+DEFAULT_ESP32_IP  = "10.15.216.197"            # Change to your ESP32-CAM IP
+DEFAULT_MODEL     = "../../models/gc_car_trained_model/gc_car_yolo11m_best.pt"
+STREAM_PORT       = 81      # CameraWebServer streams on port 81
 STREAM_PATH       = "/stream"
 CONF_THRESHOLD    = 0.65    # Min confidence to show label
 SMOOTH_WINDOW     = 5       # Majority-vote over last N frames
@@ -45,7 +26,7 @@ INFERENCE_SKIP    = 1       # Run AI every N frames (1 = every frame)
 RECONNECT_DELAY   = 3.0
 SAVE_DIR          = "../../data/captures"
 
-# ── Display colours (BGR) ─────────────────────────────────────
+# Display colours (BGR)
 COLORS = {
     "hazardous":     (0,   0,   235),   # Red
     "non_hazardous": (0,   200, 0  ),   # Green
@@ -57,7 +38,7 @@ LABELS = {
     "unknown":       "...",
 }
 
-# ─────────────────────────────────────────────────────────────
+
 def parse_args():
     p = argparse.ArgumentParser(description="GC-Car Live Garbage Classifier")
     p.add_argument("--ip",    default=DEFAULT_ESP32_IP,
@@ -71,14 +52,14 @@ def parse_args():
     return p.parse_args()
 
 
-# ── Classifier wrapper ────────────────────────────────────────
+
 class GarbageClassifier:
     def __init__(self, model_path: str, device: str):
         script_dir = Path(__file__).parent
         candidates = [
             Path(model_path),
             script_dir / model_path,
-            script_dir / "../models/gc_car_trained_model/gc_car_yolo11m_best.pt",
+            script_dir / "../../models/gc_car_trained_model/gc_car_yolo11m_best.pt",
             script_dir / "../../models/gc_car_trained_model/gc_car_yolo11s_fast_best.pt",
             script_dir / "../../models/gc_car_trained_model/gc_car_yolo11m_balanced_best.pt",
             script_dir / "../../models/gc_car_trained_model/gc_car_yolo11m_max_best.pt",
@@ -129,7 +110,7 @@ class GarbageClassifier:
         }
 
 
-# ── MJPEG stream reader ───────────────────────────────────────
+
 class ESP32Streamer:
     def __init__(self, ip, port=80, path="/stream"):
         self.url       = f"http://{ip}:{port}{path}"
@@ -174,7 +155,7 @@ class ESP32Streamer:
         self.buffer = b""
 
 
-# ── HUD drawing ───────────────────────────────────────────────
+
 def draw_hud(frame, pred, fps, frame_num, inf_ms, threshold):
     h, w = frame.shape[:2]
     label = pred.get("label", "unknown")
@@ -237,7 +218,7 @@ def draw_hud(frame, pred, fps, frame_num, inf_ms, threshold):
     return frame
 
 
-# ─────────────────────────────────────────────────────────────
+
 def main():
     args = parse_args()
     os.makedirs(SAVE_DIR, exist_ok=True)
@@ -256,7 +237,7 @@ def main():
         cap       = cv2.VideoCapture(0)
         use_esp32 = False
     else:
-        streamer  = ESP32Streamer(args.ip, path=STREAM_PATH)
+        streamer  = ESP32Streamer(args.ip, port=STREAM_PORT, path=STREAM_PATH)
         while not streamer.connect():
             print(f"[RETRY] in {RECONNECT_DELAY}s ...")
             time.sleep(RECONNECT_DELAY)

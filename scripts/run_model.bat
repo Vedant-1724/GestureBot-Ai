@@ -1,20 +1,17 @@
 @echo off
 setlocal
 
-set "ROOT=%~dp0"
+set "ROOT=%~dp0.."
 cd /d "%ROOT%"
 
 echo ================================================
 echo GC-Car Live Model Launcher
-echo Project: %ROOT%
 echo ================================================
 echo.
 
 if not exist "gc_car_env\Scripts\activate.bat" (
-    echo [ERROR] Virtual environment not found at:
-    echo         %ROOT%gc_car_env\Scripts\activate.bat
-    echo.
-    echo Recreate it with:
+    echo [ERROR] Virtual environment not found.
+    echo Recreate with:
     echo   py -3.11 -m venv gc_car_env
     echo   gc_car_env\Scripts\activate
     echo   pip install -r requirements.txt
@@ -24,11 +21,9 @@ if not exist "gc_car_env\Scripts\activate.bat" (
     exit /b 1
 )
 
-if not exist "05_model\gc_car_trained_model\gc_car_yolo11m_best.pt" (
+if not exist "models\gc_car_trained_model\gc_car_yolo11m_best.pt" (
     echo [ERROR] Trained model not found at:
-    echo         %ROOT%05_model\gc_car_trained_model\gc_car_yolo11m_best.pt
-    echo.
-    echo Put your best model file there and run this launcher again.
+    echo         models\gc_car_trained_model\gc_car_yolo11m_best.pt
     echo.
     pause
     exit /b 1
@@ -37,7 +32,6 @@ if not exist "05_model\gc_car_trained_model\gc_car_yolo11m_best.pt" (
 call "gc_car_env\Scripts\activate.bat"
 if errorlevel 1 (
     echo [ERROR] Could not activate gc_car_env.
-    echo.
     pause
     exit /b 1
 )
@@ -50,10 +44,10 @@ if not "%USER_INPUT%"=="" set "ESP32_IP=%USER_INPUT%"
 echo.
 if /I "%ESP32_IP%"=="local" (
     echo [INFO] Starting local webcam inference...
-    python "06_inference\esp32_live_inference.py" --local
+    python "src\inference\esp32_live_inference.py" --local
 ) else (
     echo [INFO] Starting ESP32-CAM inference on %ESP32_IP% ...
-    python "06_inference\esp32_live_inference.py" --ip %ESP32_IP%
+    python "src\inference\esp32_live_inference.py" --ip %ESP32_IP%
 )
 
 echo.

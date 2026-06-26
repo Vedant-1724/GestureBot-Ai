@@ -1,56 +1,17 @@
-# ================================================================
-#  GC-CAR PROJECT — Python Requirements
-#  File   : requirements.txt
-#  Folder : GC_Car_Project/ (root)
-#
-#  Install command (run from project root):
-#    pip install -r requirements.txt
-#
-#  Then install PyTorch separately with CUDA 12.1 for RTX 4050:
-#    Recommended on Windows: Python 3.11 or 3.12
-#    pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
-# ================================================================
+# Install: pip install -r requirements.txt
+# PyTorch (CUDA): pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
 
-# ── Core AI framework ─────────────────────────────────────────
-ultralytics>=8.3.0          # YOLO11 — detection + classification
-
-# ── Computer Vision ───────────────────────────────────────────
+ultralytics>=8.3.0          # YOLO11 classification
 opencv-python>=4.10.0       # Video stream + frame display
 Pillow>=10.3.0              # Image I/O and preprocessing
-
-# ── Numerical / Data ──────────────────────────────────────────
 numpy>=1.26.0
 pandas>=2.2.0
-
-# ── Metrics & Evaluation ──────────────────────────────────────
 scikit-learn>=1.5.0         # Classification report, ROC, PR curves
 scipy>=1.13.0
-
-# ── Plotting ─────────────────────────────────────────────────
 matplotlib>=3.9.0
 seaborn>=0.13.0
-
-# ── HTTP / Networking ─────────────────────────────────────────
-requests>=2.32.0            # MJPEG stream fetching from ESP32-CAM
-
-# ── Dataset utilities ─────────────────────────────────────────
+requests>=2.32.0            # MJPEG stream from ESP32-CAM
 tqdm>=4.66.0                # Progress bars
-split-folders>=0.5.1        # Train/val/test splitting helper
-
-# ── Config ────────────────────────────────────────────────────
-PyYAML>=6.0.1               # YAML config files for YOLO
-
-# ── Kaggle API (optional — for auto-download) ─────────────────
-kaggle>=1.6.0
-
-# ================================================================
-#  NOTE: PyTorch is NOT listed here because the CUDA version
-#  must be installed separately. Run this command AFTER the
-#  pip install above:
-#
-#    pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
-#
-#  Verify GPU after install:
-#    python -c "import torch; print(torch.cuda.get_device_name(0))"
-#  Expected output: NVIDIA GeForce RTX 4050
-# ================================================================
+split-folders>=0.5.1        # Train/val/test splitting
+PyYAML>=6.0.1               # YAML config for YOLO
+kaggle>=1.6.0               # Optional dataset download

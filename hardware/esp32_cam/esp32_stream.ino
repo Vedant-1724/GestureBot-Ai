@@ -1,30 +1,8 @@
 /*
- * ============================================================
- *  ESP32-CAM  —  MJPEG STREAMING SERVER
- *  File   : esp32_stream.ino
- *  Folder : 01_hardware/esp32_cam/
- * ============================================================
- *  Board    : AI Thinker ESP32-CAM
- *  Camera   : OV2640
- *
- *  Arduino IDE settings:
- *    Board            → AI Thinker ESP32-CAM
- *    Upload Speed     → 115200
- *    Partition Scheme → Huge APP (3MB No OTA / 1MB SPIFFS)
- *
- *  Flashing steps:
- *    1. Wire GPIO0 → GND  (boot-to-flash mode)
- *    2. Upload this sketch
- *    3. Remove GPIO0 → GND wire
- *    4. Press RESET button
- *    5. Open Serial Monitor at 115200 baud
- *    6. Note the printed IP address
- *
- *  Stream URL after boot:
- *    http://<IP_ADDRESS>/stream
- *
- *  !! CHANGE WiFi credentials below before uploading !!
- * ============================================================
+ * ESP32-CAM MJPEG Streaming Server
+ * Board: AI Thinker ESP32-CAM with OV2640
+ * Stream URL: http://<IP>/stream
+ * CHANGE WiFi credentials below before uploading.
  */
 
 #include "esp_camera.h"
@@ -36,11 +14,11 @@
 #include "soc/rtc_cntl_reg.h"
 #include "esp_http_server.h"
 
-// ── WiFi Credentials — CHANGE THESE ──────────────────────────
+// WiFi Credentials — CHANGE THESE
 const char* WIFI_SSID     = "YOUR_WIFI_SSID";      // <── change
 const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";   // <── change
 
-// ── AI Thinker ESP32-CAM pin map ─────────────────────────────
+
 #define PWDN_GPIO_NUM    32
 #define RESET_GPIO_NUM   -1
 #define XCLK_GPIO_NUM     0
@@ -58,7 +36,7 @@ const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";   // <── change
 #define HREF_GPIO_NUM    23
 #define PCLK_GPIO_NUM    22
 
-// ── MJPEG stream boundary string ─────────────────────────────
+
 #define PART_BOUNDARY "gc_car_frame_boundary"
 static const char* STREAM_CONTENT_TYPE =
   "multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
@@ -69,7 +47,7 @@ static const char* STREAM_PART =
 
 httpd_handle_t camera_httpd = NULL;
 
-// ── Stream HTTP handler ───────────────────────────────────────
+
 static esp_err_t stream_handler(httpd_req_t* req) {
   camera_fb_t* fb      = NULL;
   esp_err_t    res     = ESP_OK;
@@ -119,7 +97,7 @@ static esp_err_t stream_handler(httpd_req_t* req) {
   return res;
 }
 
-// ── Start HTTP server ─────────────────────────────────────────
+
 void startStreamServer() {
   httpd_config_t config      = HTTPD_DEFAULT_CONFIG();
   config.server_port         = 80;
@@ -140,7 +118,7 @@ void startStreamServer() {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
+
 void setup() {
   // Disable brownout detector (prevents resets on peak current)
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
@@ -149,7 +127,7 @@ void setup() {
   Serial.setDebugOutput(false);
   Serial.println("\n[INFO] GC-Car ESP32-CAM booting...");
 
-  // ── Camera config ─────────────────────────────────────────
+
   camera_config_t cam;
   cam.ledc_channel = LEDC_CHANNEL_0;
   cam.ledc_timer   = LEDC_TIMER_0;
@@ -191,7 +169,7 @@ void setup() {
   }
   Serial.println("[INFO] Camera initialized OK");
 
-  // ── Sensor tuning ─────────────────────────────────────────
+
   sensor_t* s = esp_camera_sensor_get();
   s->set_brightness(s, 1);
   s->set_contrast(s, 1);
@@ -205,7 +183,7 @@ void setup() {
   s->set_agc_gain(s, 0);
   s->set_gainceiling(s, (gainceiling_t)2);
 
-  // ── WiFi ──────────────────────────────────────────────────
+
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("[INFO] Connecting to WiFi");

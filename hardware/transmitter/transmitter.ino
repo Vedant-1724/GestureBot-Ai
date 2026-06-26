@@ -1,21 +1,7 @@
 /*
- * ============================================================
- *  GESTURE CONTROLLED CAR — TRANSMITTER
- *  File   : transmitter.ino
- *  Folder : 01_hardware/transmitter/
- * ============================================================
- *  Hardware : Arduino Nano + MPU6050 + nRF24L01+ (via adapter)
- *
- *  Required Libraries (install via Library Manager):
- *    • RF24 by TMRh20          (v1.4.x)
- *    • MPU6050 by Electronic Cats
- *
- *  Pin Connections:
- *    MPU6050 : SDA→A4  SCL→A5  VCC→5V  GND→GND
- *    nRF24L01+: CE→D9  CSN→D10  SCK→D13  MOSI→D11  MISO→D12
- *    Power   : Recommended → regulated 5V to Nano 5V pin
- *              Alternate   → 7–12V battery to VIN
- * ============================================================
+ * GC-Car Transmitter — Arduino Nano + MPU6050 + nRF24L01+
+ * Reads hand tilt, maps to movement commands, sends via RF.
+ * Pipe: "GCCAR", Channel 108, 250kbps
  */
 
 #include <SPI.h>
@@ -23,18 +9,18 @@
 #include <Wire.h>
 #include <MPU6050.h>
 
-// ── Pin Definitions ──────────────────────────────────────────
+
 #define NRF_CE_PIN   9
 #define NRF_CSN_PIN  10
 
-// ── Objects ──────────────────────────────────────────────────
+
 RF24    radio(NRF_CE_PIN, NRF_CSN_PIN);
 MPU6050 mpu;
 
-// ── RF Pipe Address (must match receiver exactly) ─────────────
+
 const byte PIPE_ADDRESS[6] = "GCCAR";
 
-// ── Data Packet (must match receiver struct exactly) ──────────
+
 struct ControlPacket {
   int16_t xAngle;    // Forward/Backward  –90 to +90 degrees
   int16_t yAngle;    // Left/Right         –90 to +90 degrees
@@ -45,15 +31,14 @@ struct ControlPacket {
 
 ControlPacket txData;
 
-// ── Calibration offsets (filled by calibrateMPU) ─────────────
+
 int16_t ax_offset = 0;
 int16_t ay_offset = 0;
 int16_t az_offset = 0;
 
-// ── Dead-zone (degrees) — prevents jitter at rest ─────────────
+// Dead-zone (degrees) — prevents jitter at rest
 const int DEAD_ZONE = 12;
 
-// ─────────────────────────────────────────────────────────────
 void setup() {
   Serial.begin(9600);
   Wire.begin();
@@ -89,7 +74,6 @@ void setup() {
   Serial.println(F("===================================="));
 }
 
-// ─────────────────────────────────────────────────────────────
 void loop() {
   int16_t ax, ay, az, gx, gy, gz;
   mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
@@ -102,7 +86,7 @@ void loop() {
   int16_t xAngle = constrain(map(ax, -17000, 17000, -90, 90), -90, 90);
   int16_t yAngle = constrain(map(ay, -17000, 17000, -90, 90), -90, 90);
 
-  // ── Decide movement mode ────────────────────────────────────
+
   if (abs(xAngle) <= DEAD_ZONE && abs(yAngle) <= DEAD_ZONE) {
     // STOP
     txData.mode     = 0;
@@ -135,10 +119,10 @@ void loop() {
   txData.xAngle = xAngle;
   txData.yAngle = yAngle;
 
-  // ── Transmit ────────────────────────────────────────────────
+
   bool ok = radio.write(&txData, sizeof(ControlPacket));
 
-  // ── Serial debug ────────────────────────────────────────────
+
   Serial.print(F("xA:")); Serial.print(xAngle);
   Serial.print(F(" yA:")); Serial.print(yAngle);
   Serial.print(F(" Mode:")); Serial.print(txData.mode);
@@ -148,7 +132,7 @@ void loop() {
   delay(20);   // 50 Hz update rate
 }
 
-// ── Calibration helper ────────────────────────────────────────
+
 void calibrateMPU() {
   const int SAMPLES = 200;
   int32_t sx = 0, sy = 0, sz = 0;

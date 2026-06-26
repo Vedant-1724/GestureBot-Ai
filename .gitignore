@@ -42,3 +42,14 @@ data/captures/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Temporary and generated files
+temp_*.py
+temp_*.bin
+*.docx
+ChatGPT Image*
+
+# Tool directories
+.codex/
+.docx_qa_render/
+.agents/

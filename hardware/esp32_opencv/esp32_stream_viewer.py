@@ -1,20 +1,5 @@
-"""
-================================================================
- GC-CAR — ESP32-CAM STREAM VIEWER (OpenCV)
- File   : esp32_stream_viewer.py
- Folder : 02_esp32_opencv/
-
- Usage:
-   python esp32_stream_viewer.py --ip 192.168.1.xxx
-
- Requirements:
-   pip install opencv-python numpy requests
-
- Controls (while window is open):
-   Q  — quit
-   S  — save current frame to ../../data/captures/ folder
-================================================================
-"""
+"""OpenCV viewer for ESP32-CAM MJPEG stream.
+Press Q to quit, S to save a frame."""
 
 import cv2
 import numpy as np
@@ -24,15 +9,15 @@ import time
 import os
 import sys
 
-# ── Configuration ─────────────────────────────────────────────
-DEFAULT_ESP32_IP   = "192.168.1.100"   # Change to your ESP32-CAM IP
-STREAM_PORT        = 80
+
+DEFAULT_ESP32_IP   = "10.167.179.197"   # Change to your ESP32-CAM IP
+STREAM_PORT        = 81
 STREAM_PATH        = "/stream"
 DISPLAY_SCALE      = 1.0               # 1.0 = native, 1.5 = larger
 RECONNECT_DELAY    = 3.0               # Seconds before reconnect attempt
 SAVE_DIR           = "../06_inference/../../data/captures"
 
-# ── Argument parser ───────────────────────────────────────────
+
 def parse_args():
     p = argparse.ArgumentParser(description="GC-Car ESP32-CAM Stream Viewer")
     p.add_argument("--ip",    type=str, default=DEFAULT_ESP32_IP,
@@ -44,7 +29,7 @@ def parse_args():
     return p.parse_args()
 
 
-# ── MJPEG stream reader ───────────────────────────────────────
+
 class ESP32StreamReader:
     def __init__(self, ip, port=80, path="/stream"):
         self.url       = f"http://{ip}:{port}{path}"
